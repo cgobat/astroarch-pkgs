@@ -3,9 +3,10 @@
 # This build contains some changes that allow FireCapture to work on aarch64 and start with no path issues
 pkgname=firecapture
 pkgver=2.7.14
+[ "$CARCH" = "aarch64" ] && pkgver="${pkgver}a" # unclear if the 'a' is always present for ARM, or just this release
 pkgrel=1
 pkgdesc="The leading planetary capture tool"
-arch=(aarch64)
+arch=(x86_64 aarch64)
 url="http://www.firecapture.de"
 license=('custom:firecapture')
 depends=('libusb')
