@@ -10,12 +10,25 @@ arch=(x86_64 aarch64)
 url="http://www.firecapture.de"
 license=('custom:firecapture')
 depends=('libusb')
-source=(fire_capture.deb::https://www.thefamilee.co.uk/public/Astro/firecapture_${pkgver}_aarch64.deb)
-sha256sums=(3bbcabe388c238094e81580a7d93108248b01687c76a4dfdb98b7518ed3fef51)
+makedepends=('curl')
+source=("https://www.firecapture.de/license.html")
+sha256sums=(SKIP)
 _filename=fire_capture.deb
 
 prepare() {
-    ar p ${_filename} data.tar.xz > data.tar.xz
+    DL_URL="https://www.firecapture.de/download.php"
+    _debtarget="FireCapture_v${pkgver}.deb"
+    [ "$CARCH" = "aarch64" ] && _debtarget="firecapture_${pkgver}_aarch64.deb"
+    SRC_URL="${DL_URL}?file=${_debtarget}"
+    echo "  -> Downloading $_debtarget..."
+    _cookies="cookie_file.tmp"
+    _response=$(curl -s -c "$_cookies" "$SRC_URL")
+    _question=$(echo "$_response" | grep -oP '(?<=>)\d+ \+ \d+(?= =)')
+    _answer=$((_question))
+    echo "    Prompt was '$_question', responding with '$_answer'"
+    curl -b "$_cookies" -X POST -d "password=$_answer" "$SRC_URL" -o "$_filename"
+    rm $_cookies
+    ar x ${_filename} data.tar.xz
 }
 
 package() {
