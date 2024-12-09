@@ -19,12 +19,15 @@ prepare() {
 }
 
 package() {
-    echo "  -> Extracting the data.tar.xz..."
+    echo "  -> Extracting data.tar.xz..."
     bsdtar -xf data.tar.xz -C "$pkgdir/"
-    #mkdir -p "$pkgdir/usr/lib"
 
     # License
-    install -Dm644 "$pkgdir/opt/FireCapture_v2.7/license.txt" "$pkgdir/usr/share/licenses/$pkgname/license.txt"
+    _license_dest="$pkgdir/usr/share/licenses/$pkgname"
+    install -Dm644 "$srcdir/license.html" "$_license_dest/license.html"
+    install -pm644 "$pkgdir/opt/FireCapture_v2.7/license.txt" "$_license_dest/license.txt"
     mv "$pkgdir/lib/" "$pkgdir/usr/lib"
-    rm -rf "$pkgdir/lib"
+    if [ -d "$pkgdir/lib" ]; then
+        rmdir "$pkgdir/lib"
+    fi
 }
